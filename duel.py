@@ -15,6 +15,10 @@ pygame.display.set_caption('Duel')
 BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 WHITE = (255, 255, 255)
+TEXTCOLOR = (0, 0, 0)
+
+# Set up the fonts.
+font = pygame.font.SysFont(None, 48)
 
 # Set up the player and bullet data structures.
 count = 0
@@ -29,10 +33,17 @@ bulletSpeed = 4
 bulletLength = 10
 bulletHeight = 2
 playerWindow = []
+gamePlay = True
 
 # Set up movement variables.
 jumpState = [False, False]
 jumpTime = [0, 0]
+
+def drawText(text, font, surface, x, y):
+    textobj = font.render(text, 1, TEXTCOLOR)
+    textrect = textobj.get_rect()
+    textrect.topleft = (x, y)
+    surface.blit(textobj, textrect)
 
 # Run the game loop.
 while True:
@@ -108,11 +119,15 @@ while True:
     p = 0
 
     # Check whether a player is hit.
-    while p < 2:
-        while count < len(bullets[p]):
+    while p < 2 and gamePlay:
+        while count < len(bullets[p]) and gamePlay:
             if p == 0:
                 if bullets[p][count].colliderect(player[1]):
                     print('hit')
+                    print('Game over')
+                    del bullets[p][count]
+                    playerAmmo[p] += 1
+                    gamePlay = False
             if p == 1:
                 print('n')
                 #other
@@ -122,6 +137,9 @@ while True:
 
     count = 0
     p = 0
+
+    if not gamePlay:
+        drawText('GAME OVER', font, windowSurface, (WINDOWWIDTH / 3), (WINDOWHEIGHT / 3))
 
     # Draw the window onto the screen.
     pygame.display.update()
